@@ -1,8 +1,8 @@
-// context/ModalContext.tsx
 'use client';
 
 import { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
 import { ModalState } from '@/types/modal';
+import dynamic from 'next/dynamic';
 
 // Initial state
 const initialModalState: ModalState = {
@@ -88,10 +88,26 @@ export const modalActions = {
     }
 };
 
-export const modalComponents: Record<string, React.ComponentType<never>> = {
-    // You'll need to import and map all your modal components here
-    // For example:
-    // 'settings': Settings,
-    // 'importPage': ImportPage,
-    // etc.
-};
+export const modalComponents: Record<string, React.ComponentType<any>> = {
+    // Create/edit operations
+    'startEmpty': dynamic(() => import('../components/modals/StartEmptyModal')),
+    'createUIKit': dynamic(() => import('../components/modals/CreateUIKitModal')),
+    'importUIKit': dynamic(() => import('../components/modals/ImportUIKitModal')),
+    
+    // Settings and configuration
+    'settings': dynamic(() => import('../components/modals/SettingsModal')),
+    'help': dynamic(() => import('../components/modals/HelpDocsModal')),
+    
+    // Media handling
+    'media': dynamic(() => import('../components/modals/MediaModal')),
+    'imagePreview': dynamic(() => import('../components/modals/ImagePreviewModal')),
+    
+    // Block operations
+    'importBlock': dynamic(() => import('../components/modals/ImportBlockModal')),
+    'importPage': dynamic(() => import('../components/modals/ImportPageModal')),
+
+    'customize': dynamic(() => import('../components/modals/CustomizeModal')), 
+  'animation': dynamic(() => import('../components/modals/AnimationModal')),
+  'linkBlock': dynamic(() => import('../components/modals/LinkBlockModal')),
+  'cssBlock': dynamic(() => import('../components/modals/CssBlockModal'))
+  };

@@ -92,7 +92,7 @@ export default function ImagePlaceholder({
     // Preview the image
     const handlePreviewImage = () => {
         if (editorState?.current?.image?.url) {
-            localStorage.setItem('whoobe-image-preview', JSON.stringify(editorState.current.image));
+            localStorage.setItem('windflow-image-preview', JSON.stringify(editorState.current.image));
 
             modalDispatch({
                 type: 'OPEN_MODAL',

@@ -115,7 +115,7 @@ export default function PagesGallery({ dbMode = true }: PagesGalleryProps) {
     editorDispatch({ type: 'SET_DOCUMENT', payload: page.json.blocks });
     
     // Save to localStorage for preview
-    localStorage.setItem('whoobe-preview', JSON.stringify(page));
+    localStorage.setItem('windflow-preview', JSON.stringify(page));
     
     // Open preview dialog
     modalDispatch({

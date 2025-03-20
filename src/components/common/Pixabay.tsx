@@ -76,7 +76,7 @@ export default function Pixabay({ onClose, onUploaded }: PixabayProps) {
   // Handle preview changes
   useEffect(() => {
     if (preview) {
-      localStorage.setItem('whoobe-image-preview', JSON.stringify(preview));
+      localStorage.setItem('windflow-image-preview', JSON.stringify(preview));
       
       // In the Vue version this was emitting a dialogBus event
       // In our React version we'd use our context API
@@ -156,7 +156,7 @@ export default function Pixabay({ onClose, onUploaded }: PixabayProps) {
   const downloadImage = () => {
     if (!preview?.name) {
       if (preview) {
-        preview.name = 'whoobe-' + Math.random().toString(36).substring(2, 9);
+        preview.name = 'windflow-' + Math.random().toString(36).substring(2, 9);
       }
     } else {
       uploadImage();

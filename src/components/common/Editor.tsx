@@ -119,7 +119,7 @@ export default function Editor() {
     
     const handleCopyBlock = (block?: any) => {
       window.localStorage.setItem(
-        'whoobe-clipboard', 
+        'windflow-clipboard', 
         JSON.stringify(block || state.current)
       );
       
@@ -131,7 +131,7 @@ export default function Editor() {
     
     const handlePasteBlock = (type?: string) => {
       if (state.current) {
-        const block = JSON.parse(window.localStorage.getItem('whoobe-clipboard') || '{}');
+        const block = JSON.parse(window.localStorage.getItem('windflow-clipboard') || '{}');
         const pasteBlock = cloneElement(block);
         
         if (type === 'document') {
@@ -163,8 +163,8 @@ export default function Editor() {
     
     const handlePreviewAction = (mode?: string) => {
       dispatch({ type: 'SET_PREVIEW', payload: true });
-      window.localStorage.setItem('whoobe-preview', JSON.stringify(state.document));
-      window.localStorage.setItem('whoobe-page', JSON.stringify(state.page));
+      window.localStorage.setItem('windflow-preview', JSON.stringify(state.document));
+      window.localStorage.setItem('windflow-page', JSON.stringify(state.page));
       
       modalActions.openModal(
         modalDispatch,
@@ -255,7 +255,7 @@ export default function Editor() {
           traverse(o[i]);
         } else {
           if (i === 'id') {
-            o[i] = `whoobe-${Math.random().toString(36).substring(2, 5)}`;
+            o[i] = `windflow-${Math.random().toString(36).substring(2, 5)}`;
           }
         }
       }

@@ -290,7 +290,7 @@ export default function BlockTailwind({ css = '', cid = '' }: BlockTailwindProps
       )}
 
       {controls && (
-        <div className="whoobe-editor-tw-controls bg-bluegray-100 text-gray-500 border-b border-gray-900 top-0 absolute w-full z-2xtop left-0 right-0 bottom-0">
+        <div className="windflow-editor-tw-controls bg-bluegray-100 text-gray-500 border-b border-gray-900 top-0 absolute w-full z-2xtop left-0 right-0 bottom-0">
           <div 
             className="bg-indigo-500 text-white flex flex-row p-1 items-center capitalize cursor-pointer text-white"
             onClick={() => {

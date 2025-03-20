@@ -17,7 +17,7 @@ import { EditorAction } from '@/context/EditorContext';
 export function exportDocument(
   dispatch: Dispatch<EditorAction>,
   confirmSave = true,
-  name = 'whoobe-document',
+  name = 'windflow-document',
   type = 'document'
 ) {
   // Show confirmation dialog if needed

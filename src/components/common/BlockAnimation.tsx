@@ -117,7 +117,7 @@ const BlockAnimation: React.FC = () => {
       
       <p className="text-xs text-gray-400 mt-4">
         <b>Animations require GSAP as animation engine</b>.<br /><br />
-        Using whoobe-one-next to deploy your template will automatically include 
+        Using windflow-one-next to deploy your template will automatically include 
         the animation engine based on GSAP (GreenSock).
       </p>
     </div>

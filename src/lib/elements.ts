@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Element, ElementImage, ElementStyle } from '@/types/element';
+import { Element, ElementImage, GridElement, ElementStyle } from '@/types/element';
 
 const defaultElementStyle: ElementStyle = {
     css: '',
@@ -346,11 +346,6 @@ export const elementGroups = [
         ]
     }
 ];
-
-// lib/elements.ts
-
-import { v4 as uuidv4 } from 'uuid';
-import { Element, GridElement, ElementStyle } from '@/types/element';
 
 /**
  * Creates a grid container element with specified number of columns

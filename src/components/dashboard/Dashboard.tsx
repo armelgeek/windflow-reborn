@@ -63,7 +63,7 @@ export default function Dashboard() {
     {
       label: 'Github',
       icon: <RiGithubLine className="text-3xl" />,
-      action: () => window.open('https://github.com/username/whoobe-next', '_blank')
+      action: () => window.open('https://github.com/username/windflow-next', '_blank')
     },
     {
       label: 'Docs',

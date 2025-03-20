@@ -191,7 +191,7 @@ export const editorActions = {
     dispatch({ type: 'COPY_BLOCK', payload: block });
     
     // Also store in localStorage for persistence
-    localStorage.setItem('whoobe-clipboard', JSON.stringify(block));
+    localStorage.setItem('windflow-clipboard', JSON.stringify(block));
   },
   
   pasteBlock: (dispatch: Dispatch<EditorAction>) => {
@@ -270,7 +270,7 @@ function cloneElementWithNewId(element: Element): Element {
   const clonedElement = JSON.parse(JSON.stringify(element)) as Element;
   
   // Generate random ID
-  const generateId = () => 'whoobe-' + Math.random().toString(36).substring(2, 9);
+  const generateId = () => 'windflow-' + Math.random().toString(36).substring(2, 9);
   
   // Recursively update IDs
   const traverseAndUpdateIds = (el: Element) => {
@@ -480,7 +480,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       if (!state.current) return state;
       
       // Get the block from local storage
-      const clipboardBlock = localStorage.getItem('whoobe-clipboard');
+      const clipboardBlock = localStorage.getItem('windflow-clipboard');
       if (!clipboardBlock) return state;
       
       try {
@@ -579,7 +579,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         css: state.current.css,
         style: state.current.style
       };
-      localStorage.setItem('whoobe-block-css', JSON.stringify(css));
+      localStorage.setItem('windflow-block-css', JSON.stringify(css));
       
       return {
         ...state,
@@ -594,7 +594,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       if (!state.current) return state;
       
       // Get CSS from localStorage
-      const storedCss = localStorage.getItem('whoobe-block-css');
+      const storedCss = localStorage.getItem('windflow-block-css');
       if (!storedCss) return state;
       
       try {

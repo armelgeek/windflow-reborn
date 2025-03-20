@@ -137,7 +137,7 @@ export default function BlockSlider({
             <div
                 ref={sliderRef}
                 id={slider.id}
-                className="snap overflow-x-hidden relative flex-no-wrap flex transition-all whoobe-slider"
+                className="snap overflow-x-hidden relative flex-no-wrap flex transition-all windflow-slider"
                 data-slides={slider.blocks.length}
             >
                 {slider.blocks.map((slide, index) => (

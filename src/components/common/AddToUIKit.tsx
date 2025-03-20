@@ -60,7 +60,7 @@ const AddToUIKit: React.FC = () => {
     });
     
     // Save to localStorage
-    localStorage.setItem('whoobe-ui-kit', JSON.stringify(library));
+    localStorage.setItem('windflow-ui-kit', JSON.stringify(library));
     
     // Close the dialog
     modalDispatch({
