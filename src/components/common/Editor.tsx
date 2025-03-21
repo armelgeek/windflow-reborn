@@ -332,7 +332,7 @@ export default function Editor() {
             
             {/* Sidebar */}
             {sidebar && (
-              <div className="min-h-screen fixed z-modal right-0 top-0 mt-8 bg-white w-1/5 border-l pr-10">
+              <div className="min-h-screen fixed z-40 right-0 top-0 mt-8 bg-white w-1/5 border-l pr-10">
                 <EditorSidebar 
                   tab={sidebarName} 
                   onClose={() => {
@@ -344,7 +344,7 @@ export default function Editor() {
             )}
             
             {/* Sidebar Tabs */}
-            <div className="fixed bg-white z-modal mt-8 w-10 right-0 top-0 h-screen flex flex-col items-center justify-start text-center shadow">
+            <div className="fixed bg-white z-40 mt-8 w-10 right-0 top-0 h-screen flex flex-col items-center justify-start text-center shadow">
               <div className="chip bg-black text-white my-1 text-xs px-1 rounded">Tools</div>
               <EditorSidebarTabs tab={sidebarName} />
             </div>

@@ -61,9 +61,9 @@ export default function BlockSlider({
             case 'bottom':
                 return 'flex justify-center m-auto w-full bottom-0 absolute z-10 items-center';
             case 'left':
-                return 'flex flex-col h-full absolute top-0 left-0 justify-center items-center z-modal';
+                return 'flex flex-col h-full absolute top-0 left-0 justify-center items-center z-40';
             case 'right':
-                return 'flex flex-col h-full absolute top-0 right-0 justify-center items-center z-modal';
+                return 'flex flex-col h-full absolute top-0 right-0 justify-center items-center z-40';
             case 'top':
                 return 'flex justify-center m-auto w-full top-0 absolute z-10 items-center';
             default:

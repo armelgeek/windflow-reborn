@@ -12,10 +12,11 @@ import {
     createParagraph, createTextarea
 } from './elements';
 import {Template} from "@/types/template";
+import { randomId } from './utils';
 
 export function createBlock(name: string, element: Element): Block {
     return {
-        id: uuidv4(),
+        id: randomId(),
         name,
         description: '',
         category: 'Default',
@@ -28,7 +29,7 @@ export function createBlock(name: string, element: Element): Block {
 
 export function createTemplate(name: string, element: Element): Template {
     return {
-        id: uuidv4(),
+        id: randomId(),
         name,
         description: '',
         category: 'Default',
@@ -228,7 +229,7 @@ function createElement(
     type: string,
     options: Partial<Element> = {}
 ): Element {
-    const id = options.id || uuidv4();
+    const id = options.id || randomId();
 
     return {
         id,

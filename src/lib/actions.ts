@@ -8,6 +8,7 @@ import { createContainer, createFlexbox } from './elements';
 import { createTemplate } from './blocks';
 import Template from './templates';
 import { modalActions } from '@/context/ModalContext';
+import { randomId } from './utils';
 
 /**
  * Exports the current document as a JSON file
@@ -331,7 +332,7 @@ export const openStartEmptyDialog = (
  */
 export function createHeading(level: number, content: string = ''): Element {
   return {
-    id: uuidv4(),
+    id: randomId(),
     element: `h${level}`,
     tag: `h${level}`,
     level,
@@ -350,7 +351,7 @@ export function createHeading(level: number, content: string = ''): Element {
 
 export function createParagraph(content: string = ''): Element {
   return {
-    id: uuidv4(),
+    id: randomId(),
     element: 'p',
     tag: 'p',
     content,

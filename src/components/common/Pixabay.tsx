@@ -329,7 +329,7 @@ export default function Pixabay({ onClose, onUploaded }: PixabayProps) {
       )}
       
       {preview && (
-        <div className="modal z-modal w-3/4 p-4 bg-black fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="modal z-40 w-3/4 p-4 bg-black fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <Icon 
             icon="mdi:close" 
             className="absolute right-0 top-0 m-1 text-white text-2xl cursor-pointer" 

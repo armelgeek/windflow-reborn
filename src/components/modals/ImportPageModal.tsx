@@ -8,6 +8,7 @@ import { useDesktop, desktopActions } from '@/context/DesktopContext';
 import { useNotification, notificationActions } from '@/context/NotificationContext';
 import { v4 as uuidv4 } from 'uuid';
 import { UploadCloud, File } from 'lucide-react';
+import { randomId } from '@/lib/utils';
 
 interface ImportPageModalProps {
   options?: any;
@@ -103,7 +104,7 @@ export default function ImportPageModal({ onClose }: ImportPageModalProps) {
           
           // Ensure page has an ID
           if (!pageData.id) {
-            pageData.id = uuidv4();
+            pageData.id = randomId();
           }
           
           // First set the document

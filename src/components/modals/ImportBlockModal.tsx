@@ -6,6 +6,7 @@ import { useEditor, editorActions } from '@/context/EditorContext';
 import { useNotification, notificationActions } from '@/context/NotificationContext';
 import { v4 as uuidv4 } from 'uuid';
 import { UploadCloud, File } from 'lucide-react';
+import { randomId } from '@/lib/utils';
 
 interface ImportBlockModalProps {
   options?: {
@@ -75,7 +76,7 @@ export default function ImportBlockModal({ options = {}, onClose }: ImportBlockM
       if (!node) return node;
       
       // Assign new ID
-      const newNode = { ...node, id: uuidv4() };
+      const newNode = { ...node, id: randomId() };
       
       // Process child blocks if they exist
       if (Array.isArray(newNode.blocks)) {
@@ -122,7 +123,7 @@ export default function ImportBlockModal({ options = {}, onClose }: ImportBlockM
               type: 'SET_PAGE',
               payload: {
                 ...blockData,
-                id: blockData.id || uuidv4() // Ensure unique ID
+                id: blockData.id || randomId() 
               }
             });
             

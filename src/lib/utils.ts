@@ -9,9 +9,7 @@ export function cleanCssClasses(css: string): string {
     return uniqueClasses.join(' ');
 }
 
-export function randomId(): string {
-    return Math.random().toString(36).substring(2, 9);
-}
+
 
 export function formatImageUrl(image: ElementImage | string): string {
     if (!image) return '';
@@ -225,3 +223,7 @@ export function cloneElementWithNewIds(obj: any): any {
   
   return traverse(clone);
 }
+
+export function randomId(): string {
+    return 'winflow-' + Math.random().toString(36).substring(2, 9).replace(/[^a-z0-9\-_]/gi, '');
+  }

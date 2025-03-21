@@ -155,7 +155,7 @@ export default function BlockContainer({
   const debugInfo = showDebugInfo && mode === 'edit' && (
     <div 
       className={`
-        bg-gray-800 text-white px-2 py-1 text-xs rounded opacity-50 z-10 pointer-events-none
+        bg-gray-300 text-gray-800 px-2 py-3 text-xs opacity-50 z-10 pointer-events-none
         ${(!doc.blocks || doc.blocks.length === 0) ? 'inline-block mr-2' : 'absolute top-0 right-0'}
       `}
       title={`ID: ${doc.id}`}

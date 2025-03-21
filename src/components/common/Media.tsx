@@ -121,7 +121,7 @@ const Media: React.FC<MediaProps> = ({ options }) => {
   if (!images) return null;
 
   return (
-    <div className="z-modal">
+    <div className="z-40">
       {/* Header with management options */}
       <div className="h-10 w-full p-2 flex flex-row items-center px-16">
         {options === 'manage' && (

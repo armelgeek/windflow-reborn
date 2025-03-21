@@ -94,14 +94,14 @@ export default function BlockFloatingAction({
   return (
     <div 
       ref={containerRef}
-      className={`flex flex-col shadow z-modal bg-white modal ${getClassName()} ${className}`}
+      className={`flex flex-col shadow z-40 bg-white modal ${getClassName()} ${className}`}
       style={style}>
       <div 
         ref={headerRef}
-        className="cursor-move z-modal flex bg-purple-800 h-8 text-white p-1"
+        className="cursor-move z-40 flex bg-purple-800 h-8 text-white p-1"
         onMouseDown={handleMouseDown}>
         {title}
-        <div className="flex h-8 items-center justify-center absolute top-0 right-0 z-modal">
+        <div className="flex h-8 items-center justify-center absolute top-0 right-0 z-40">
           <MoveVertical className="mr-1" size={18} />
           <button 
             className="m-1 mr-2 cursor-pointer" 

@@ -78,7 +78,7 @@ export default function UiKits() {
 
     return (
         <div className="pages-gallery bg-white w-screen overflow-hidden max-h-screen h-screen mt-0 inset-0" key={galleryID}>
-            <div className="py-1 mt-8 bg-white shadow w-screen z-modal hidden md:flex md:flex-row items-center">
+            <div className="py-1 mt-8 bg-white shadow w-screen z-40 hidden md:flex md:flex-row items-center">
                 <div className="flex items-center pl-2">
                     <button
                         className="mr-2 rounded btn-purple py-1 px-2 absolute right-0"
@@ -151,7 +151,7 @@ export default function UiKits() {
                 </div>
 
                 {freeKits && whoobeKits && (
-                    <div className="absolute right-0 top-0 mt-20 ml-2 w-64 shadow flex flex-col p-2 bg-white z-modal cursor-pointer border">
+                    <div className="absolute right-0 top-0 mt-20 ml-2 w-64 shadow flex flex-col p-2 bg-white z-40 cursor-pointer border">
                         {whoobeKits.map((kit, index) => (
                             <div
                                 key={index}

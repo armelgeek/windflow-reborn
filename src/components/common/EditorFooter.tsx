@@ -135,7 +135,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
   };
   
   return (
-    <div className="w-screen bg-white shadow z-modal h-10 flex items-center fixed bottom-0 px-2 cursor-pointer border-t">
+    <div className="w-screen bg-white shadow z-40 h-10 flex items-center fixed bottom-0 px-2 cursor-pointer border-t">
       <div className="border-r h-10 mx-1"></div>
       
       {/* Settings */}

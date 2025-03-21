@@ -1,5 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
+
 import { Element, ElementImage, GridElement, ElementStyle } from '@/types/element';
+import { randomId } from './utils';
 
 const defaultElementStyle: ElementStyle = {
     css: '',
@@ -16,7 +17,7 @@ export function createElement(
     type: string,
     options: Partial<Element> = {}
 ): Element {
-    const id = options.id || uuidv4();
+    const id = options.id || randomId();
 
     return {
         id,
@@ -108,7 +109,7 @@ export function createInput(type: string = 'text', placeholder: string = ''): El
             attributes: {
                 type,
                 placeholder,
-                name: `input-${uuidv4().slice(0, 8)}`
+                name: `input-${randomId()}`
             },
             options: [],
             alpine: {}
@@ -229,8 +230,8 @@ export function createForm(
             attributes: {
                 action,
                 method,
-                id: `form-${uuidv4().slice(0, 8)}`,
-                name: `form-${uuidv4().slice(0, 8)}`
+                id: `form-${randomId()}`,
+                name: `form-${randomId()}`
             },
             ...options.data
         },
@@ -249,8 +250,8 @@ export function createSelect(
         data: {
             options,
             attributes: {
-                name: `select-${uuidv4().slice(0, 8)}`,
-                id: `select-${uuidv4().slice(0, 8)}`
+                name: `select-${randomId()}`,
+                id: `select-${randomId()}`
             },
             alpine: {}
         },
@@ -270,8 +271,8 @@ export function createTextarea(
             attributes: {
                 placeholder,
                 rows,
-                name: `textarea-${uuidv4().slice(0, 8)}`,
-                id: `textarea-${uuidv4().slice(0, 8)}`
+                name: `textarea-${randomId()}`,
+                id: `textarea-${randomId()}`
             },
             options: [],
             alpine: {}
@@ -358,7 +359,7 @@ export function createGridElement(
   cols: number = 1, 
   options: Partial<Element> = {}
 ): GridElement {
-  const id = options.id || uuidv4();
+  const id = options.id || randomId();
   
   // Default grid styles
   const defaultStyle: ElementStyle = {
@@ -417,7 +418,7 @@ export function createFlexboxElement(
   colspan: number = 1, 
   options: Partial<Element> = {}
 ): Element {
-  const id = options.id || uuidv4();
+  const id = options.id || randomId();
   
   // Default flexbox styles
   const defaultStyle: ElementStyle = {

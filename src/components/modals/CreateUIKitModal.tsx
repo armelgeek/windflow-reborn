@@ -3,7 +3,9 @@
 
 import { useState } from 'react';
 import { useDesktop, desktopActions } from '@/context/DesktopContext';
-import { v4 as uuidv4 } from 'uuid';import Template from '@/lib/templates';
+import { v4 as uuidv4 } from 'uuid';
+import Template from '@/lib/templates';
+import { randomId } from '@/lib/utils';
 ;
 
 interface CreateUIKitModalProps {
@@ -19,7 +21,7 @@ export default function CreateUIKitModal({ onClose }: CreateUIKitModalProps) {
   const handleCreate = () => {
     // Create a new UI Kit
     const newKit = {
-      id: uuidv4(),
+      id: randomId(),
       name: kitName,
       description: kitDescription,
       templates: [] as Template[],

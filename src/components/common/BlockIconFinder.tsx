@@ -90,7 +90,7 @@ export default function BlockIconFinder({ onClose }: BlockIconFinderProps) {
       )}
       
       {icons && icons.length > 0 && (
-        <div className="z-modal w-full h-64 overflow-y-auto bg-white shadow flex flex-row flex-wrap bg-white cursor-pointer">
+        <div className="z-40 w-full h-64 overflow-y-auto bg-white shadow flex flex-row flex-wrap bg-white cursor-pointer">
           {icons.map((icon) => (
             <div 
               key={icon}
