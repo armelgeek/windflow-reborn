@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useModal, modalActions } from '@/context/ModalContext';
+import { useModal } from '@/context/ModalContext';
 import { useDesktop, desktopActions } from '@/context/DesktopContext';
 import { createEmptyTemplate, createDefaultTemplate } from '@/lib/blocks';
+import { createEmptyBlock } from '@/lib/actions';
+import { useEditor } from '@/context/EditorContext';
 
 interface StartEmptyModalProps {
   options?: any;
@@ -15,6 +17,7 @@ export default function StartEmptyModal({ onClose }: StartEmptyModalProps) {
   const [templateName, setTemplateName] = useState('New Template');
   const [templateType, setTemplateType] = useState('empty');
   const router = useRouter();
+  const { dispatch: editorDispatch } = useEditor();
   const { dispatch: modalDispatch } = useModal();
   const { dispatch: desktopDispatch } = useDesktop();
 
@@ -33,6 +36,8 @@ export default function StartEmptyModal({ onClose }: StartEmptyModalProps) {
       object: template,
       type: 'editor'
     });
+
+    createEmptyBlock(editorDispatch, desktopDispatch);
     
     // Close modal
     onClose();

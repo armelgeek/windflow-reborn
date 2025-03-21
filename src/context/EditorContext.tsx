@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
-import {EditorSettings, EditorState} from "@/types/editor";
+
 import {Template} from "@/types/template";
 import { cleanCssClasses } from '@/lib/utils';
 
@@ -116,7 +116,7 @@ const EditorContext = createContext<{
 
 export function EditorProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(editorReducer, initialEditorState);
-
+    console.log('state mikamika',state)
     return (
         <EditorContext.Provider value={{ state, dispatch }}>
             {children}

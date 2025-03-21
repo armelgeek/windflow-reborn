@@ -1,214 +1,418 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useEditor, editorActions } from '@/context/EditorContext';
-import { useModal, modalActions } from '@/context/ModalContext';
-import { v4 as uuidv4 } from 'uuid';
-import { useNotification } from '@/context/NotificationContext';
+import BlockContainer from '@/components/blocks/BlockContainer';
 import { Element } from '@/types/element';
-import BlockContainer from '../blocks/BlockContainer';
+import { cleanCssClasses } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { useModal } from '@/context/ModalContext';
+import BlockFloating from './BlockFloating';
+import IconifyIcon from './IconifyIcon';
+import BlockFloatingAction from './BlockFloatingAction';
 
-interface BlockEditorProps {
-  scroll?: number;
-}
-
-export default function BlockEditor({ scroll = 0 }: BlockEditorProps) {
-  const { state, dispatch } = useEditor();
+export default function BlockEditor() {
+  const router = useRouter();
+  const { state: editorState, dispatch: editorDispatch } = useEditor();
   const { dispatch: modalDispatch } = useModal();
-  const { dispatch: notificationDispatch } = useNotification();
-  
-  const [showCopyId, setShowCopyId] = useState<boolean>(false);
-  const [currentCoords, setCurrentCoords] = useState<DOMRect | null>(null);
-  const [styleTop, setStyleTop] = useState<number>(0);
-  const [styleLeft, setStyleLeft] = useState<number>(0);
-  const [document, setDocument] = useState<Element | null>(null);
-  
-  const containerRef = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<HTMLDivElement>(null);
-  const highlightRef = useRef<HTMLDivElement>(null);
-  
-  // Initialize document from state
+  const mainEditorRef = useRef<HTMLDivElement>(null);
+
+  // State equivalent to Vue data properties
+  const [scroll, setScroll] = useState(0);
+  const [viewBlocks, setViewBlocks] = useState(false);
+  const [display, setDisplay] = useState(true);
+  const [editorOffsetX] = useState(16);
+  const [editorOffsetY] = useState(88);
+  const [coords, setCoords] = useState({
+    top: 0,
+    left: 0,
+    offsetX: 0,
+    offsetY: 0
+  });
+  const [containerCoords, setContainerCoords] = useState({
+    top: 0,
+    left: 0,
+    height: 0
+  });
+  const [component, setComponent] = useState<any>(null);
+  const [actionComponent, setActionComponent] = useState<any>(null);
+  const [actionTitle, setActionTitle] = useState('');
+  const [options, setOptions] = useState<any>(null);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Handle scroll events
   useEffect(() => {
-    if (state.document) {
-      setDocument(state.document);
-    }
-  }, [state.document]);
-  
-  // Watch for scroll changes
-  useEffect(() => {
-    if (editorRef.current && scroll > 0) {
-      editorRef.current.scrollTop = scroll;
-    }
-  }, [scroll]);
-  
-  // Register key event listeners
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Copy element ID with Ctrl+I
-      if (e.ctrlKey && e.key === 'i' && state.current) {
-        navigator.clipboard.writeText(state.current.id);
-        setShowCopyId(true);
-        
-        // Hide notification after 2 seconds
-        setTimeout(() => {
-          setShowCopyId(false);
-        }, 2000);
+    if (!editorState.current || !mainEditorRef.current) return;
+
+    try {
+      if (editorState.current && editorState.current.id) {
+        const el = document.getElementById(editorState.current.id);
+        if (el) {
+          const elementCoords = el.getBoundingClientRect();
+          setContainerCoords(prev => ({
+            ...prev,
+            top: elementCoords.top - scroll
+          }));
+        }
       }
-    };
+    } catch (err) {
+      console.error('Error updating coordinates:', err);
+    }
+  }, [scroll, editorState.current]);
+
+  // Watch for changes to current element
+  useEffect(() => {
+    if (editorState.current) {
+      setActionComponent(null);
+      setContainerCoords(prev => ({
+        ...prev,
+        top: prev.top - scroll
+      }));
+    }
+  }, [editorState.current?.id]);
+
+  // Set up autosave if enabled
+  useEffect(() => {
+    if (!editorState.page) return;
+
+    // Get settings from context or localStorage
+    const settings = editorState.settings || { autosave: false, autosaveTimeout: 5 };
     
-    document.addEventListener('keydown', handleKeyDown);
+    if (settings.autosave && editorState.page.id !== '0') {
+      const autosaveTimer = setInterval(() => {
+        // Call savePage function
+        savePage();
+      }, parseInt(settings.autosaveTimeout) * 1000 * 60);
+      
+      setTimer(autosaveTimer);
+    }
     
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      if (timer) {
+        clearInterval(timer);
+      }
     };
-  }, [state.current]);
-  
-  // Update element highlight when current element changes
+  }, [editorState.page]);
+
+  // Initialize document if needed
   useEffect(() => {
-    if (state.current && state.current.id) {
-      updateHighlight();
-    }
-  }, [state.current]);
-  
-  // Focus current element when changed
-  useEffect(() => {
-    if (state.current && state.current.id) {
-      const el = document.getElementById(state.current.id);
-      if (el) {
-        updateElementCoords(el);
+    if (!editorState.document) {
+      const lastDocument = localStorage.getItem('whoobe-preview');
+      if (lastDocument) {
+        try {
+          editorActions.setDocument(editorDispatch, JSON.parse(lastDocument));
+        } catch (error) {
+          console.error('Error loading last document:', error);
+        }
+      } else {
+        // Create a new component
+        createEmptyComponent();
       }
     }
-  }, [state.current?.id]);
-  
-  // Handle global click to clear selection
+  }, [editorState.document]);
+
+  // Event listeners
   useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && e.target instanceof Node) {
-        // Only clear selection if clicking outside the editor
-        if (!containerRef.current.contains(e.target)) {
-          clearCurrent();
+    // Set up scroll event listener
+    if (mainEditorRef.current) {
+      mainEditorRef.current.addEventListener('scroll', handleScroll);
+      mainEditorRef.current.style.overflowY = 'auto';
+    }
+
+    // Set up custom event listeners (equivalent to Vue's eventBus)
+    const handleFloatingElement = (id: string) => {
+      setComponent(BlockFloating);
+      const coords = getCoords(id);
+      if (coords) {
+        setContainerCoords({
+          top: coords.top + 8,
+          left: coords.left,
+          height: 0
+        });
+      }
+    };
+
+    const handleEditorAction = (action: any) => {
+      setActionTitle(action.title);
+      setActionComponent(() => action.component);
+      const floatingCoords = getCoords('floating');
+      if (floatingCoords) {
+        setCoords({
+          top: floatingCoords.top + scroll,
+          left: floatingCoords.left,
+          offsetX: 0,
+          offsetY: 0
+        });
+      }
+      setOptions(action.options);
+    };
+
+    const handleSelectedMedia = (media: any) => {
+      if (editorState.current) {
+        if (editorState.current.image && 'url' in editorState.current.image) {
+          editorState.current.image.url = media;
+        } else {
+          editorState.current.image = media;
+        }
+        setActionComponent(null);
+      }
+    };
+
+    const handleSetFlexRow = () => {
+      if (editorState.current) {
+        let container = editorState.current.css.container
+          .replace('flex-col', '')
+          .replace('flex-row', '');
+        
+        if (!container.includes('flex-row')) {
+          editorState.current.css.container = cleanCssClasses(container + ' flex-row');
         }
       }
     };
-    
-    document.addEventListener('click', handleClick);
-    
-    return () => {
-      document.removeEventListener('click', handleClick);
-    };
-  }, []);
-  
-  // Clear current selection
-  const clearCurrent = () => {
-    dispatch({ type: 'SET_CURRENT', payload: null });
-    
-    if (highlightRef.current) {
-      highlightRef.current.style.opacity = '0';
-    }
-  };
-  
-  // Get coordinates of an element
-  const updateElementCoords = (element: HTMLElement) => {
-    if (!element) return;
-    
-    const coords = element.getBoundingClientRect();
-    setCurrentCoords(coords);
-    
-    if (containerRef.current) {
-      const containerCoords = containerRef.current.getBoundingClientRect();
-      
-      setStyleTop(coords.top - containerCoords.top);
-      setStyleLeft(coords.left - containerCoords.left);
-      
-      // Update coords in current element
-      if (state.current) {
-        const updatedCurrent = {
-          ...state.current,
-          coords
-        };
+
+    const handleSetFlexCol = () => {
+      if (editorState.current) {
+        let container = editorState.current.css.container
+          .replace('flex-col', '')
+          .replace('flex-row', '');
         
-        dispatch({ type: 'SET_CURRENT', payload: updatedCurrent });
+        if (!container.includes('flex-col')) {
+          editorState.current.css.container = cleanCssClasses(container + ' flex-col');
+        }
+      }
+    };
+
+    // Register event listeners
+   document.addEventListener('floatingElement', (e: any) => handleFloatingElement(e.detail));
+    document.addEventListener('editorAction', (e: any) => handleEditorAction(e.detail));
+    document.addEventListener('selectedMedia', (e: any) => handleSelectedMedia(e.detail));
+    document.addEventListener('setFlexRow', () => handleSetFlexRow());
+    document.addEventListener('setFlexCol', () => handleSetFlexCol());
+
+    // Initial setup
+    if (!editorState.page) {
+      router.push('/');
+    } else {
+      setCurrent(editorState.document);
+      setActionComponent(null);
+      // Equivalent to $editorBus('floatingElement', editorState.document.id)
+     // handleFloatingElement(editorState.document?.id);
+      
+      if (!editorState.page.id && editorState.document && editorState.document.blocks.length === 0) {
+        // Open snippets dialog
+        modalDispatch({
+          type: 'OPEN_MODAL',
+          payload: { component: 'snippets', title: 'Snippets' }
+        });
       }
     }
+
+    // Cleanup
+    return () => {
+      if (mainEditorRef.current) {
+        mainEditorRef.current.removeEventListener('scroll', handleScroll);
+      }
+      document.removeEventListener('floatingElement', (e: any) => handleFloatingElement(e.detail));
+      document.removeEventListener('editorAction', (e: any) => handleEditorAction(e.detail));
+      document.removeEventListener('selectedMedia', (e: any) => handleSelectedMedia(e.detail));
+      document.removeEventListener('setFlexRow', () => handleSetFlexRow());
+      document.removeEventListener('setFlexCol', () => handleSetFlexCol());
+    };
+  }, [editorState.document, editorState.page, editorState.current, scroll]);
+
+  // Methods
+  const handleScroll = (e: Event) => {
+    const target = e.target as HTMLElement;
+    setScroll(target.scrollTop);
   };
-  
-  // Update highlight position
-  const updateHighlight = () => {
-    if (!state.current || !state.current.id) return;
+
+  const createEmptyComponent = () => {
+    // Equivalent to Vue's createDocument method
+    // This would normally use the helper functions like in actions.ts
+    const event = new CustomEvent('createComponent');
+    document.dispatchEvent(event);
+  };
+
+  const setCurrent = (element: Element) => {
+    if (!element) return;
     
-    const el = document.getElementById(state.current.id);
-    if (!el || !highlightRef.current) return;
+    // Clean CSS classes
+    if (element.css && element.css.css) {
+      element.css.css = cleanCssClasses(element.css.css);
+    }
     
-    updateElementCoords(el);
-    
-    // Update highlight styles
-    if (highlightRef.current) {
-      highlightRef.current.style.opacity = '1';
-      highlightRef.current.style.top = `${styleTop}px`;
-      highlightRef.current.style.left = `${styleLeft}px`;
-      highlightRef.current.style.width = `${currentCoords?.width || 0}px`;
-      highlightRef.current.style.height = `${currentCoords?.height || 0}px`;
+    // Update current element in state
+    editorActions.setCurrent(editorDispatch, element);
+  };
+
+  const getCoords = (id: string) => {
+    const el = document.querySelector('#' + id);
+    try {
+      return el ? el.getBoundingClientRect() : null;
+    } catch (err) {
+      console.error('Error getting coordinates:', err);
+      return null;
     }
   };
-  
-  // Handle element selection
-  const handleSelectElement = (element: Element) => {
-    dispatch({ type: 'SET_CURRENT', payload: element });
+
+  const savePage = () => {
+    // This would be implemented in a utility function or context action
+    console.log('Auto-saving page...');
+    // Call API or dispatch action to save page
   };
-  
-  // Render placeholder when no document is available
-  if (!document) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl mb-4">No document loaded</h1>
-          <button 
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            onClick={() => modalDispatch({ 
-              type: 'OPEN_MODAL',
-              payload: { 
-                component: 'startEmpty',
-                title: 'Create New Document'
-              }
-            })}
-          >
-            Create a new document
-          </button>
-        </div>
-      </div>
-    );
+
+  // Helper for conditional CSS classes
+  const editElementContent = () => {
+    return component ? 'opacity-100' : 'opacity-0';
+  };
+
+  // If the essential data is not loaded, don't render
+  if (!display || !editorState.page || !editorState.document) {
+    return null;
   }
-  
+
   return (
     <div 
-      ref={containerRef}
-      className="relative w-full h-full editor-main bg-gray-100 min-h-screen overflow-y-auto overflow-x-hidden"
+      ref={mainEditorRef} 
+      id="mainEditor" 
+      className={`bg-gray-100 min-h-screen text-black ${!display ? 'hidden' : ''}`}
     >
-      <div ref={editorRef} className="w-full overflow-y-auto">
-        {/* Element Highlight */}
-        <div 
-          ref={highlightRef}
-          className="absolute border-2 border-purple-500 pointer-events-none z-40 transition-all duration-200 opacity-0"
-          style={{ 
-            boxShadow: '0 0 0 2000px rgba(0, 0, 0, 0.1)',
-            clipPath: 'inset(0px -2000px -2000px 0px)'
-          }}
-        />
-        
-        {/* ID Copied Notification */}
-        {showCopyId && (
-          <div className="fixed top-0 right-0 bg-green-500 text-white p-2 z-50">
-            Element ID copied to clipboard!
-          </div>
+      {/* Header bar */}
+      <div className="h-8 mt-8 p-1 bg-white text-gray-800 w-full fixed flex flex-row items-center left-0 top-0 z-50 shadow cursor-pointer">
+        {editorState.page && (
+          <span className="ml-2 px-2 py-1 rounded text-gray-100 bg-purple-800">
+            {editorState.page.name}
+          </span>
         )}
+        <span className="px-2 py-1 rounded bg-gray-100 text-black ml-1">
+          {editorState.page?.category}
+        </span>
         
-        {/* Main Editor Content */}
-        <BlockContainer
-          doc={document} 
-          mode="edit"
-          onSelect={handleSelectElement}
-        />
+        <button 
+          className="text-gray-400 ml-4 text-2xl hover:text-purple-600"
+          onClick={() => {
+            // Open settings dialog
+            modalDispatch({
+              type: 'OPEN_MODAL',
+              payload: { component: 'settingsPage', title: 'Template Settings' }
+            });
+          }}
+          title="Template settings"
+        >
+          <IconifyIcon icon="carbon:settings" />
+        </button>
+        
+        <button 
+          className="text-xl ml-4 cursor-pointer"
+          onClick={() => {
+            // Open JavaScript editor dialog
+            modalDispatch({
+              type: 'OPEN_MODAL',
+              payload: { component: 'JSEditor', title: 'JavaScript Editor', options: { type: 'javascript' } }
+            });
+          }}
+          title="Add Javascript"
+        >
+          <IconifyIcon icon="akar-icons:javascript-fill" />
+        </button>
+        
+        <button 
+          className="text-gray-400 ml-4 text-2xl hover:text-purple-600"
+          onClick={() => {
+            // Open shortcuts dialog
+            modalDispatch({
+              type: 'OPEN_MODAL',
+              payload: { component: 'shortcuts', title: 'Keyboard Shortcuts' }
+            });
+          }}
+          title="Shortcuts"
+        >
+          <IconifyIcon icon="gg:shortcut" />
+        </button>
+        
+        <button 
+          className="ml-4 text-2xl"
+          onClick={() => {
+            // Open help dialog
+            modalDispatch({
+              type: 'OPEN_MODAL',
+              payload: { component: 'help', title: 'Documentation', options: { section: 'Editor' } }
+            });
+          }}
+          title="Documentation"
+        >
+          <IconifyIcon icon="grommet-icons:help-option" />
+        </button>
+        
+        <button 
+          className="text-gray-400 ml-4 text-2xl hover:text-purple-600"
+          onClick={() => {
+            // Trigger preview mode
+            const event = new CustomEvent('preview', { detail: 'fullscreen' });
+            document.dispatchEvent(event);
+          }}
+          title="Preview"
+        >
+          <IconifyIcon icon="codicon:open-preview" />
+        </button>
+        
+        <span className="absolute right-0 mr-12">
+          X:{parseInt(String(containerCoords.left)) - editorOffsetX} Y:{parseInt(String(containerCoords.top + scroll - editorOffsetY))}
+        </span>
       </div>
+      
+      {/* Main editor area */}
+      <div className="p-4 mt-24 pb-20" id="BlockEditor">
+        {editorState.document && (
+          <BlockContainer 
+            doc={editorState.document} 
+            mode="edit"
+            onSelect={setCurrent}
+          />
+        )}
+      </div>
+      
+      {/* Floating action panel */}
+      {editorState.current && actionComponent && (
+        <BlockFloatingAction 
+          className="z-50 bg-white shadow"
+          coords={coords}
+          scroll={scroll}
+          title={actionTitle}
+          component={actionComponent}
+          options={options}
+          onClose={() => setActionComponent(null)}
+        />
+      )}
+      
+      {/* Floating element panel */}
+      {component && (
+        <div
+          className={`absolute left-0 z-50 ${editElementContent()}`}
+          id="floating"
+          style={{
+            top: `${containerCoords.top}px`,
+            left: `${containerCoords.left}px`
+          }}
+        >
+          {React.createElement(component, {
+            scroll,
+            coords: containerCoords,
+            onClose: () => {
+              setComponent(null);
+              setActionComponent(null);
+            }
+          })}
+        </div>
+      )}
+      
+      {/* Debug view */}
+      {editorState.current && viewBlocks && (
+        <pre>
+          {editorState.current.tag}
+          {JSON.stringify(editorState.current, null, 2)}
+        </pre>
+      )}
     </div>
   );
 }

@@ -199,7 +199,7 @@ export default function Editor() {
     };
     
     const handleExportDocument = () => {
-      editorActions.exportDocument(dispatch);
+     // editorActions.exportDocument(dispatch);
     };
     
     // Register event listeners

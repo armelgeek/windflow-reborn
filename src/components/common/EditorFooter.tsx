@@ -5,21 +5,17 @@ import { useEditor, editorActions } from '@/context/EditorContext';
 import { useDesktop, desktopActions } from '@/context/DesktopContext';
 import { useModal, modalActions } from '@/context/ModalContext';
 import { useNotification, notificationActions } from '@/context/NotificationContext';
-import { useLoading } from '@/hooks/useLoading';
 import html2canvas from 'html2canvas';
 import {
   Settings,
   Save,
   SaveAll,
-  FileDownload,
-  FileUpload,
-  Widgets,
-  FileExport,
   Trash,
   HelpCircle,
-  HighlightAlt,
   ExternalLink
 } from 'lucide-react';
+import { FaFileDownload, FaFileExport } from 'react-icons/fa';
+import { MdFileUpload, MdHighlightAlt, MdWidgets } from 'react-icons/md';
 
 interface EditorFooterProps {
   tab?: string;
@@ -30,7 +26,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
   const { state: desktopState, dispatch: desktopDispatch } = useDesktop();
   const { dispatch: modalDispatch } = useModal();
   const { dispatch: notificationDispatch } = useNotification();
-  const { setLoading } = useLoading();
+  const [loading, setLoading] = useState(false);
   
   const [message, setMessage] = useState<string>('');
   const [hasCustomLibrary, setHasCustomLibrary] = useState<boolean>(false);
@@ -43,7 +39,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
   }, [desktopState.library]);
   
   // Setup message listener
-  useEffect(() => {
+  /**useEffect(() => {
     // This replaced the Vue event bus
     const handleEditorMessage = (msg: string, type: string = 'info') => {
       setMessage(msg);
@@ -68,10 +64,10 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
       editorActions.removeListener(editorDispatch, 'editorMessage');
     };
   }, [editorDispatch]);
-  
+  **/
   // Save page
   const savePage = async () => {
-    setLoading(true);
+   /** setLoading(true);
     
     // Set current element to null
     editorActions.setCurrent(editorDispatch, null);
@@ -116,14 +112,14 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
         );
       }
     }
-    
+    **/
     setLoading(false);
   };
   
   // Save page as a copy
   const saveAs = () => {
     // Create a copy of the page with a new name and ID
-    editorActions.updatePage(editorDispatch, {
+  /**  editorActions.updatePage(editorDispatch, {
       ...editorState.page,
       name: editorState.page.name + ' COPY',
       id: 0
@@ -135,6 +131,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
       'settingsPage',
       'Page Settings'
     );
+     */
   };
   
   return (
@@ -171,19 +168,19 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
       {/* Import */}
       <button 
         className="icon-button" 
-        onClick={() => editorActions.triggerEvent(editorDispatch, 'importPage', 'page')}
+        //onClick={() => editorActions.triggerEvent(editorDispatch, 'importPage', 'page')}
         title="Import template"
       >
-        <FileDownload size={20} />
+        <FaFileDownload size={20} />
       </button>
       
       {/* Export */}
       <button 
         className="icon-button" 
-        onClick={() => editorActions.exportDocument(editorDispatch)}
+        //onClick={() => editorActions.exportDocument(editorDispatch)}
         title="Export template"
       >
-        <FileUpload size={20} />
+        <MdFileUpload size={20} />
       </button>
       
       <div className="border-r h-10 mx-1"></div>
@@ -195,7 +192,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
         title="Add to current kit"
       >
         <span className="text-gray-300 mr-1">+</span>
-        <Widgets size={20} className={hasCustomLibrary ? 'animate-pulse' : ''} />
+        <MdWidgets size={20} className={hasCustomLibrary ? 'animate-pulse' : ''} />
       </button>
       
       {/* Show current UI Kit name */}
@@ -209,10 +206,10 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
       {hasCustomLibrary && (
         <button 
           className="icon-button" 
-          onClick={() => desktopActions.exportCustomLibrary(desktopDispatch)}
+         // onClick={() => desktopActions.exportCustomLibrary(desktopDispatch)}
           title="Save UI Kit"
         >
-          <FileExport size={20} />
+          <FaFileExport size={20} />
         </button>
       )}
       
@@ -221,7 +218,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
       {/* Delete template */}
       <button 
         className="icon-button" 
-        onClick={() => editorActions.deletePage(editorDispatch)}
+        //onClick={() => editorActions.deletePage(editorDispatch)}
         title="Delete template"
       >
         <Trash size={20} />
@@ -241,7 +238,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
       <div className="border-r h-10 mx-1"></div>
       
       {/* Current element info */}
-      <HighlightAlt size={20} />
+      <MdHighlightAlt size={20} />
       
       <div className="px-2">
         {editorState.current && (
@@ -304,7 +301,7 @@ export default function EditorFooter({ tab }: EditorFooterProps) {
         
         <button 
           className="text-xs flex font-light items-center h-10 btn btn-purple ml-2 rounded px-2 py-1"
-          onClick={() => editorActions.triggerEvent(editorDispatch, 'preview', 'fullscreen')}
+          //onClick={() => editorActions.triggerEvent(editorDispatch, 'preview', 'fullscreen')}
           title="Full preview"
         >
           <ExternalLink size={20} className="mr-2" />

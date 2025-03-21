@@ -2,7 +2,6 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { X, MoveVertical } from 'lucide-react';
-import { useEditorComponentsContext } from '@/context/EditorComponentsContext';
 
 interface BlockFloatingActionProps {
   title: string;
@@ -17,6 +16,7 @@ interface BlockFloatingActionProps {
 }
 
 export default function BlockFloatingAction({ 
+  className,
   title, 
   component, 
   coords, 
@@ -30,11 +30,10 @@ export default function BlockFloatingAction({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [initialClickPosition, setInitialClickPosition] = useState({ x: 0, y: 0 });
   const [initialElementPosition, setInitialElementPosition] = useState({ x: 0, y: 0 });
-  const { components } = useEditorComponentsContext();
 
   // Get the actual component to render
-  const ComponentToRender = components[component];
-
+ // const ComponentToRender = components[component];
+ const ComponentToRender = null;
   // Get CSS class based on component existence
   const getClassName = () => {
     return component ? '' : 'hidden';
@@ -95,7 +94,7 @@ export default function BlockFloatingAction({
   return (
     <div 
       ref={containerRef}
-      className={`flex flex-col shadow z-modal bg-white modal ${getClassName()}`}
+      className={`flex flex-col shadow z-modal bg-white modal ${getClassName()} ${className}`}
       style={style}>
       <div 
         ref={headerRef}

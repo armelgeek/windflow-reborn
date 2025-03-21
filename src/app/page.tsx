@@ -79,7 +79,7 @@ export default function Home() {
               >
                 <div className="p-4">
                   Templates library not found.<br />
-                  Do you want to install the default WhoobeOne library?
+                  Do you want to install the default WindFlow library?
                 </div>
                 <div className="flex justify-around w-full">
                   <motion.button

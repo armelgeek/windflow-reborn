@@ -56,4 +56,8 @@ export default function TailwindCheckbox({
           type="checkbox" 
           checked={selected}
           onChange={handleChange}
-          className="form-
+          className=""/>
+      </label>
+    </div>
+  )
+}

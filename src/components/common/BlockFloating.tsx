@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useEditor } from '@/context/EditorContext';
-import { useEditorBus } from '@/context/EditorBusContext';
 import { useEventBus } from '@/context/EventContext';
 import { Element } from '@/types/element';
 import {
@@ -38,7 +37,6 @@ interface BlockFloatingProps {
 
 export default function BlockFloating({ coords, scroll, onClose }: BlockFloatingProps) {
   const { state } = useEditor();
-  const { publish: editorPublish } = useEditorBus();
   const { publish: eventPublish } = useEventBus();
   const [position, setPosition] = useState({
     top: coords.top + scroll,
@@ -123,16 +121,16 @@ export default function BlockFloating({ coords, scroll, onClose }: BlockFloating
   const handleIconClick = (icon: any, e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentIcon(icon.icon);
-    editorPublish('editorAction', icon, e);
+    //editorPublish('editorAction', icon, e);
   };
 
   // Handle flex direction actions
   const handleSetFlexRow = () => {
-    editorPublish('setFlexRow');
+    //editorPublish('setFlexRow');
   };
 
   const handleSetFlexCol = () => {
-    editorPublish('setFlexCol');
+    //editorPublish('setFlexCol');
   };
 
   // Effect for updating coordinates on sidebar state change
@@ -141,12 +139,12 @@ export default function BlockFloating({ coords, scroll, onClose }: BlockFloating
       getCoords();
     };
     
-    editorPublish('subscribeToEvent', 'isSidebar', handleSidebar);
-    editorPublish('subscribeToEvent', 'closeSidebar', handleSidebar);
+   // editorPublish('subscribeToEvent', 'isSidebar', handleSidebar);
+   // editorPublish('subscribeToEvent', 'closeSidebar', handleSidebar);
     
     return () => {
-      editorPublish('unsubscribeFromEvent', 'isSidebar', handleSidebar);
-      editorPublish('unsubscribeFromEvent', 'closeSidebar', handleSidebar);
+    //  editorPublish('unsubscribeFromEvent', 'isSidebar', handleSidebar);
+    //  editorPublish('unsubscribeFromEvent', 'closeSidebar', handleSidebar);
     };
   }, []);
 
@@ -187,7 +185,7 @@ export default function BlockFloating({ coords, scroll, onClose }: BlockFloating
       <div className="flex items-center">
         <button 
           className="floating-icon text-gray-400 hover:text-purple-600 text-xl" 
-          onClick={() => editorPublish('moveBlock', 1)} 
+          //onClick={() => editorPublish('moveBlock', 1)} 
           title="Move up">
           <MoveUp size={16} />
         </button>
@@ -244,7 +242,7 @@ export default function BlockFloating({ coords, scroll, onClose }: BlockFloating
         
         <button 
           className="floating-icon text-gray-400 hover:text-purple-600 text-xl" 
-          onClick={() => editorPublish('deleteBlock')}
+          //onClick={() => editorPublish('deleteBlock')}
           title="Delete element">
           <Trash2 size={16} />
         </button>
